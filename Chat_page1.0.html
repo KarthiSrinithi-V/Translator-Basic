@@ -1,0 +1,119 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-User Chat with Tamil Translation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://images.freecreatives.com/wp-content/uploads/2016/04/Colorful-Website-Backgrounds.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 50%;
+            height: 500px;
+            background: rgba(173, 141, 231, 0.445);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(18, 123, 165, 0.863);
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-box {
+            height: 350px;
+            overflow-y: auto;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .user1, .user2 {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+        .user1 {
+            background: #1294b4;
+            align-self: flex-start;
+        }
+        .user2 {
+            background: #92d15e;
+            align-self: flex-end;
+        }
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 50px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #a70483;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="input-area">
+            <textarea id="messageInput" placeholder="Type a message..."></textarea>
+            <p style="color: azure;"><b>Translation : </b><span id="translatedText" style="color: rgb(240, 241, 243);"></span></p>
+            <button onclick="sendMessage(1)">Person 1</button>
+            <button onclick="sendMessage(2)">Person 2</button>
+        </div>
+    </div>
+    
+    <script>
+        async function translateToTamil(text) {
+            const response = await fetch(`https://api.mymemory.translated.net/get?q=${text}&langpair=en|ta`);
+            const data = await response.json();
+            return data.responseData.translatedText;
+        }
+
+        document.getElementById("messageInput").addEventListener("input", async function() {
+            const text = this.value;
+            if (text.trim() !== "") {
+                document.getElementById("translatedText").innerText = await translateToTamil(text);
+            } else {
+                document.getElementById("translatedText").innerText = "";
+            }
+        });
+
+        function sendMessage(user) {
+            const messageInput = document.getElementById("messageInput");
+            const translatedText = document.getElementById("translatedText").innerText;
+            const chatBox = document.getElementById("chatBox");
+            
+            if (messageInput.value.trim() !== "") {
+                const userMessage = document.createElement("div");
+                userMessage.classList.add(user === 1 ? "user1" : "user2");
+                userMessage.innerHTML = `<b>User ${user}:</b> ${messageInput.value} <br> <i>${translatedText}</i>`;
+                
+                chatBox.appendChild(userMessage);
+                messageInput.value = "";
+                document.getElementById("translatedText").innerText = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
